@@ -1,6 +1,9 @@
 const { PrismaClient } = require("@prisma/client");
+const express = require("express");
+const app = express();
 
 const prisma = new PrismaClient();
+app.use(express.json());
 
 const run = async () => {
   try {
@@ -27,4 +30,22 @@ const run = async () => {
   }
 };
 
+app.post("/register", async (req, res, next) => {
+  try {
+    const { username, password, email } = req.body;
+    const result = await prisma.user.create({
+      data: {
+        username,
+        password,
+        email,
+      },
+    });
+    res.json(result);
+  } catch (error) {
+    res.status(404).json({ message: "Failed" });
+  }
+});
+
 run();
+
+app.listen(8888, () => console.log("Hello 8888"));
